@@ -117,7 +117,7 @@ body.cfm #tools,body.cfm #trav,body.cfm #info,body.cfm #code,body.cfm #modes,bod
 #info>.cx{top:4px;right:5px}
 /* nút 📐 Đo thông số trên thanh trên: hết chỗ thì chỉ còn biểu tượng, hết nữa thì nằm trong ⋯ */
 #top .ic .tx{display:none}#top .nf{display:none!important}
-@media(max-width:760px){#top{gap:4px}#top .sp{display:none}#vw{width:106px;max-width:none;flex:1 1 106px;text-overflow:ellipsis}#top>button{flex:1 1 auto}#top>#bMore{flex:none}#top>button,#top>select{padding:6px 7px}#top>button.ic{padding:6px 8px}#info{width:178px}#info h4{font-size:13px;white-space:nowrap}#info>.cx{min-width:30px;min-height:30px}}
+@media(max-width:760px){#top{gap:4px;flex-wrap:nowrap}#top .sp{display:none}#vw{width:auto;max-width:none;flex:1 1 72px;min-width:72px;text-overflow:ellipsis}#top>button{flex:1 0 auto}#top>#bMore{flex:none}#top.cp .tx{display:none}#top>button,#top>select{padding:6px 7px}#top>button.ic{padding:6px 8px}#info{width:178px}#info h4{font-size:13px;white-space:nowrap}#info>.cx{min-width:30px;min-height:30px}}
 
 /* ===== Giao diện sáng (bật trong ⚙ Cài đặt; mặc định là tối) ===== */
 :root[data-theme="dark"]{color-scheme:dark}
@@ -789,10 +789,11 @@ function tour(){const el=$('#coach');document.querySelectorAll('.hl').forEach(x=
   const c=TS[TR.i];$('#ct').innerHTML=c.t;el.style.display='flex';if(c.sel){const t=$(c.sel);t&&t.classList.add('hl')}}
 $('#cs').onclick=()=>{TR.off=1;try{localStorage.setItem('arbt_tour','1')}catch(e){}tour()};
 function fitTop(){const t=$('#top'),A=[$('#bAna'),$('#bSet'),$('#bHelp')],mo=$('#bMore');
-  [...A,mo].forEach(b=>b.classList.remove('ic','nf'));
+  [...A,mo].forEach(b=>b.classList.remove('ic','nf'));t.classList.remove('cp');
   if(!matchMedia('(max-width:760px)').matches)return;
-  const wr=()=>{const k=[...t.children].filter(e=>e.offsetParent);if(k.length<2)return false;const c=e=>e.offsetTop+e.offsetHeight/2,y=c(k[0]);return k.some(e=>Math.abs(c(e)-y)>12)};
-  A.forEach(b=>b.classList.add('nf'));                       // bắt đầu: tất cả nằm trong ⋯, rồi đưa ra ngoài nếu còn chỗ
+  const wr=()=>{if(t.scrollWidth>t.clientWidth+1)return true;const k=[...t.children].filter(e=>e.offsetParent);if(k.length<2)return false;const c=e=>e.offsetTop+e.offsetHeight/2,y=c(k[0]);return k.some(e=>Math.abs(c(e)-y)>12)};   // tràn ngang hoặc xuống dòng đều tính là hết chỗ
+  A.forEach(b=>b.classList.add('nf'));if(wr())t.classList.add('cp');   // vẫn chưa vừa 1 hàng: các nút chỉ còn biểu tượng (ẩn chữ)
+  // bắt đầu: tất cả nằm trong ⋯, rồi đưa ra ngoài nếu còn chỗ
   let full=true;                                              // hết chỗ ở nút nào thì các nút sau cũng nằm trong ⋯ (đúng thứ tự ưu tiên)
   A.forEach((b,i)=>{if(b.hidden)return;if(!full)return;b.classList.remove('nf');if(i>0)b.classList.add('ic');   // 📐 thử cả chữ; ⚙ và ? chỉ biểu tượng
     if(wr()){b.classList.add('ic');if(wr()){b.classList.add('nf');full=false}}});
